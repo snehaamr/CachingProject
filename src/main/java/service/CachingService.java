@@ -19,17 +19,31 @@ public class CachingService {
 	
 	@Autowired
 	private CachingRepository cacheRepository;
+
+	ReentrantLock rl = new ReentrantLock();
 	
 	@Cacheable(value = "caches", key = "#id")
 	public Optional<Cache> getCacheById(Long id) {
 		logger.info("Retrieving cache entry by id--calling CacheRepository");
-		return cacheRepository.findById(id);
+		Optional<Cache> result;
+		rl.lock();
+		try {
+			result = cacheRepository.findById(id);
+			rl.unlock();
+		} catch(Exception ex) {
+			logger.debug(ex.getMessage());
+		}
+
+		return result;
 	}
 	
 	@Cacheable(value = "caches", key = "#id")
 	public Cache saveCache(Cache cache) {
 		logger.info("Saving cache entry--calling CacheRepository");
+		rl.lock();
+		
 		return cacheRepository.save(cache);
+		rl.unlock();
 	}
     
 	@CacheEvict(cacheNames="caches", allEntries=true) 
