@@ -82,7 +82,7 @@ class CachingProjectApplicationTests {
 	 @Test
 	 void getCacheEntryByID_DeleteCache() {
 		 Optional<Cache> c = cacheService.getCacheById((long) 1234);
-		 assertEquals(c, getCacheEntryById((long) 1111));
+		 assertEquals(c, getCacheEntryById((long) 1234));
 		 
 		 cacheService.deleteCache();
 		 
